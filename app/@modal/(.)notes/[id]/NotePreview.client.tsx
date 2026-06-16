@@ -1,15 +1,18 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { fetchNoteById } from '@/lib/api/clientApi';
 import NoteRenderDetails from '@/components/NoteRenderDetails/NoteRenderDetails';
-// import css from './NotePreview.module.css'; // якщо потрібно
+import Modal from '@/components/Modal/Modal';
 
 interface NotePreviewProps {
   id: string;
 }
 
 const NotePreview = ({ id }: NotePreviewProps) => {
+  const router = useRouter();
+
   const {
     data: note,
     isLoading,
@@ -20,13 +23,24 @@ const NotePreview = ({ id }: NotePreviewProps) => {
     enabled: !!id,
   });
 
+  const goBack = () => router.back();
+
   if (isLoading) return <div>Loading note...</div>;
   if (error || !note) return <div>Note not found</div>;
 
   return (
-    <section>
-      <NoteRenderDetails note={note} />
-    </section>
+    <Modal onClose={goBack}>
+      <section>
+        <button
+          onClick={goBack}
+          className="backButton"
+        >
+          Go Back
+        </button> 
+
+        <NoteRenderDetails note={note} />
+      </section>
+    </Modal>
   );
 };
 
